@@ -1,0 +1,11 @@
+
+{% block body %}
+  <h1>{{title}}</h1>
+		<center>
+			Nom Partie:<input id="nom" onkeyup="typing()" type="text"><br>
+			ID Joueur 1:<input id="id1" onkeyup="typing()" type="text"><br>
+			ID Joueur 2:<input id="id2" onkeyup="typing()" type="text"><br><br>
+			<input onclick="envoye()" type="submit">
+			<button onclick="afficher()">Afficher Stat</button>
+		</center>
+{% endblock %}
