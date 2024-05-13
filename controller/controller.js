@@ -73,10 +73,10 @@ exports.deletedJ = async (req, res) => {
     exports.newpartie = async (req, res) => {
         try {
 
-          const  p1 =await  joueur.findById(req.params.id1)
-          const  p2 =await  joueur.findById(req.params.id2)
+            const p1 = await joueur.findById(req.params.id1)
+            const p2 = await joueur.findById(req.params.id2)
             const newPartie = await partie.create({
-                nom:req.body.nom,
+                nom: req.body.nom,
                 joueur1: p1._id,
                 joueur2: p2._id,
                 etat: "en cours",
@@ -87,7 +87,30 @@ exports.deletedJ = async (req, res) => {
         } catch (err) {
             res.status(500).send(err);
         }
+    }
+// socket fnct :
 
+        exports.addPartieSocket = async (data) =>{
+            try {
+                const Partie = new partie({
+                    nom: data.nom,
+                    joueur1: data.id1,
+                    joueur2: data.id2,
+                    etat: "en cours",
+                    gagnant: "",
+                });
 
-    };
+                const j1u = await joueur.findByIdAndUpdate(data.id1, {
+                    sante: 100,
+                });
+                const j2u = await joueur.findByIdAndUpdate(data.id2, {
+                    sante: 100,
+                });
+                await Partie.save();
+                //console.log("add success");
+            } catch (err) {
+                console.log({ error: err.toString() });
+            }
+        }
+
 
