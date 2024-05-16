@@ -6,6 +6,9 @@ const controller = require("../controller/controller");
 router.get('/index', function(req, res, next) {
   res.render('index', { title: 'big j1' });
 });
+router.get('/chat', function(req, res, next) {
+  res.render('chat');
+});
 
 router.post("/newjoueur", controller.addJoueur);
 router.get("/getAllJoueurs", controller.getAllJoueurs);

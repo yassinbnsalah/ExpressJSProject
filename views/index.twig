@@ -5,7 +5,7 @@
         <script src="/socket.io/socket.io.js"></script>
     </head>
 
-    <body>
+    <body ><!-- onload(esmFn) -->
     <h1>{{ title }}</h1>
     <center>
         Nom Partie: <input id="nom" type="text"><br>
@@ -17,32 +17,51 @@
 
     <!-- JavaScript code for WebSocket interaction -->
     <script>
-        // Connect to the WebSocket server
-        const socket = io.connect();
-        // Listen for the 'msg' event from the server
-        socket.on('msg', function(data) {
-            // Handle the received data here
-            console.log('Received "msg" event:', data);
-            // Perform any necessary actions based on the received data
-        });
-
-        // Function to send data to the server
-        function envoyer() {
-            partie = {
+        const socket=io.connect();
+        //name=prompt("votre nom");
+        function envoyer(){
+            partie= {
                 nom: nom.value,
                 id1: id1.value,
-                id2: id2.value
+                id2: id2.value,
             }
-            socket.emit("partie", partie)
-
+            socket.emit("creerP",partie)//string
         }
+        function afficher(){
+            partie= {
+                nom: nom.value,
+                id1: id1.value,
+                id2: id2.value,
+            }
+            console.log("lol "+JSON.stringify(partie));
+            socket.emit("hathat",partie)
+        }
+        socket.on("msg",(msg)=>{
+        console.log("msg : "+JSON.stringify(msg));
+        s=document.createElement("p")//create <p></p>
+        s.innerHTML=("<center>"+"partie"+":"+msg.nom+"<br>"+"idJoueur 1 :"+msg.id1+"<br>"+"idJoueur 2 :"+msg.id2+"</center>")
+        document.body.appendChild(s) // thotlk l p fl body 
+        })
 
 
+        socket.on("data",(data)=>{
+        console.log("data : "+JSON.stringify(data));
+        s=document.createElement("p")//create <p></p>
+        s.innerHTML=(
+            "<center>"+
+                "Stats"+": <br>"+
+                "Nom : " +data.nom+"<br>"+
+                "nom joueur 1 :" + data.j1.pseudo+"<br>"+
+                "score  :" + data.j1.score+"<br>"+
+                "sante  :" +data.j1.sante+"<br>"+
 
+                "nom joueur 2 :" + data.j2.pseudo+"<br>"+
+                "score  :" + data.j2.score+"<br>"+
+                "sante  :" +data.j2.sante+"<br>"+
 
-
-
-
+                "</center>")
+        document.body.appendChild(s) // thotlk l p fl body 
+        })
     </script>
     </body>
     </html>
