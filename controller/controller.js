@@ -30,7 +30,8 @@ exports.getAllJoueurs = async (req, res) => {
 
 exports.getOneJ = async (req, res) => {
     try {
-        const getOneJ = await joueur.find({ _id: req.params.id });
+        const getOneJ = await joueur.findById(req.params.farouk);
+        //const getOneJ2 = await joueur.find({ sante: req.body.sante });
 
         res.status(200).send(getOneJ);
     } catch (err) {
@@ -132,7 +133,6 @@ exports.getTwoPlayers = async (partie) => {
         res.status(500).send(err);
     }
 
-
 };
 
 
@@ -140,22 +140,17 @@ exports.getTwoPlayers = async (partie) => {
 /**************************CHAT FNC*********************************/
 exports.add = async (msg)=> {
     try {
-        /*
-        const chat = new Chat({
-            name: msg.nom,
-            message: msg.msg,
-            date: new Date(),
-        });
-        await chat.save();
-
-         */
         const chat = await Chat.create({
             nomSender: msg.nom,
             msg: msg.msg,
             date: new Date(),
         });
+
         //res.status(200).send("chat ajouté : " + chat);
     } catch (err) {
         console.log(err);
     }
 }
+
+
+

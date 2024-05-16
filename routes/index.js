@@ -12,7 +12,7 @@ router.get('/chat', function(req, res, next) {
 
 router.post("/newjoueur", controller.addJoueur);
 router.get("/getAllJoueurs", controller.getAllJoueurs);
-router.get("/getOneJ/:id", controller.getOneJ);
+router.get("/getOneJ/:farouk", controller.getOneJ);
 router.delete("/deletedJ/:id", controller.deletedJ);
 router.put("/attack/:ida/:idv", controller.attack);
 router.post("/newpartie/:id1/:id2", controller.newpartie);

@@ -1,36 +1,64 @@
 {% block body %}
     <html>
     <head>
-        <!-- Include Socket.IO client library -->
         <script src="/socket.io/socket.io.js"></script>
     </head>
 
-    <body ><!-- onload(esmFn) -->
+    <body>
     <h1>{{ title }}</h1>
     <center>
         msg: <input id="msg" type="text"><br>
         <input onclick="envoyer()" type="submit">
     </center>
 
-    <!-- JavaScript code for WebSocket interaction -->
+    <div id="writing-notification"></div>
     <script>
-        const socket=io.connect();
+        const socket = io.connect();
         const name = prompt("What is your name?");
-        function envoyer(){
-            data= {
-                msg: msg.value,
-                nom:name,
-            }
-            socket.emit("envoyerMsg",data)
 
+        function envoyer() {
+            const data = {
+                msg: msg.value,
+                nom: name,
+            };
+            socket.emit("envoyerMsg", data);
+            msg.value = ""; // Clear the input field
         }
 
         socket.on("chat", (data) => {
-            s=document.createElement("p")//create <p></p>
-            s.innerHTML=("<center>"+data.msg+"<br>"+"nom :" + data.nom+new Date().getHours() +":"+ new Date().getMinutes()+"</center>")
-            document.body.appendChild(s) // thotlk l p fl body
-        })
+            const s = document.createElement("p");
+            s.innerHTML = (`<center>${data.msg}<br>nom: ${data.nom} ${new Date().getHours()}:${new Date().getMinutes()}</center>`);
+            document.body.appendChild(s);
+        });
 
+
+        let isTyping = false;
+
+        function write() {
+            if (!isTyping) {
+                isTyping = true;
+                socket.emit("startTyping", name);
+            }
+        }
+
+        function stopWriting() {
+            if (isTyping) {
+                isTyping = false;
+                socket.emit("stopTyping", name);
+            }
+        }
+
+        msg.addEventListener("input", write);
+        msg.addEventListener("blur", stopWriting);
+
+        socket.on("notif", (data) => {
+            const notif = document.getElementById("writing-notification");
+            if (data.isTyping) {
+                notif.innerHTML = `${data.nom} is writing...`;
+            } else {
+                notif.innerHTML = "";
+            }
+        });
     </script>
     </body>
     </html>
