@@ -3,20 +3,23 @@ const Hotel = require("../models/hotel.schema");
 
 const Chat = require("../models/chat.schema");
 const Chambre = require("../models/chambre.schema");
-
-exports.addHotel = async (req, res) => {
-
-    const newHotel = await Hotel.create({
-        nom: req.body.nom,
-        adresse: req.body.adresse,
-        nbChambre: req.body.nbChambre,
-        email: req.body.email,
-
-        nbChambre: 0,
-    });
-    // res.status(200).send("hotel ajouté avec succès" +newHotel.nom);
-    res.status(200).send(newHotel);
-};
+const validateHotelData = require('../middleware/middleware');
+exports.addHotel = [
+    validateHotelData,
+    async (req, res) => {
+        try {
+            const newHotel = await Hotel.create({
+                nom: req.body.nom,
+                adresse: req.body.adresse,
+                nbChambre: req.body.nbChambre || 0, // Setting nbChambre to 0 if not provided
+            });
+            res.status(200).json(newHotel);
+        } catch (err) {
+           
+            res.status(500).send(err);
+        }
+    }
+];
 
 
 exports.allHotels = async (req, res) => {
@@ -59,13 +62,16 @@ exports.deleteHotelByID = async (req, res) => {
 exports.addChambre = async (req, res) => {
     try {
         console.log(req.body);
+       
         const newChambre = await Chambre.create({
             numero : req.body.numero , 
             hotel : req.params.id , 
             reservee : false , 
             nom_client : ""
         });
-
+        let hotele = await Hotel.findById(req.params.id);
+        hotele.nbChambre = hotele.nbChambre+1 ; 
+        hotele.save();
         res.status(200).json(newChambre);
     } catch (err) {
         res.status(500).send(err);
