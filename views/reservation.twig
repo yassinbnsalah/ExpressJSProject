@@ -1,0 +1,98 @@
+{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page de Réservation</title>
+    <!-- Include Socket.IO client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+
+    </style>
+</head>
+<body>
+    <h1>Page de Réservation</h1>
+    <center>
+        <label for="nom">ID Hôtel:</label> 
+        <input id="nom" type="text"><br>
+        
+        <label for="id1">ID Chambre:</label> 
+        <input id="id1" type="text"><br>
+       
+        <button type="button" onclick="reserver()">Réserver</button>
+        <button type="button" onclick="afficherChambre()">Afficher Chambre</button>
+    </center>
+
+    <div id="chambre-container" class="chambre-list"></div>
+
+   
+    <script>
+        const socket=io.connect();
+        async function afficherChambre() {
+            const hotelId = document.getElementById('nom').value;
+            if (!hotelId) {
+                alert('Veuillez saisir l\'ID de l\'hôtel.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/chambre/nonReserver/${hotelId}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const chambres = await response.json();
+                displayChambres(chambres);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        function displayChambres(chambres) {
+            const container = document.getElementById('chambre-container');
+            container.innerHTML = ''; 
+            if (chambres.length === 0) {
+                container.innerHTML = '<p>Aucune chambre disponible.</p>';
+                return;
+            }
+            const p = document.createElement('p');
+            p.innerHTML = "Chambre non reserver pour hotelId: " + chambres[0].hotel;
+            container.appendChild(p);
+            chambres.forEach(chambre => {
+                const div = document.createElement('div');
+               
+                div.innerHTML = JSON.stringify(chambre);
+                container.appendChild(div);
+            });
+        }
+
+        
+       async  function reserver() {
+            const chambreId = document.getElementById('id1').value;
+            const clientName = prompt("Veuillez entrer le nom du client:");
+            try {
+                const response = await fetch(`/chambre/reserve/${chambreId}/${clientName}`, {
+                    method: 'PUT',
+                });
+               
+                const chambre = await response.json();
+                socket.emit("reserver", chambre)
+                alert(`Chambre réservée avec succès pour le client: ${chambre.nom_client}`);
+            } catch (error) {
+                console.error('error :', error);
+                alert('Error resservation.');
+            }
+        }
+        socket.on("reserver", (chambre) => {
+            console.log("Hello")
+            const titleReservation = document.createElement("p");
+            titleReservation.innerHTML = "Information de la chambre réservée :";
+            const s = document.createElement("p");
+            s.innerHTML = JSON.stringify(chambre, null, 2);
+            document.body.appendChild(titleReservation);
+            document.body.appendChild(s);
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

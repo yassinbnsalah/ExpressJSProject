@@ -90,6 +90,18 @@ exports.newpartie = async (req, res) => {
         res.status(500).send(err);
     }
 }
+
+exports.allParties = async (req, res) => {
+    try {
+
+      
+        const newPartie = await partie.find();
+        res.status(200).send("new partie :  " + newPartie);
+
+    } catch (err) {
+        res.status(500).send(err);
+    }
+}
 // socket fnct :
 
 exports.addPartieSocket = async (data) => {

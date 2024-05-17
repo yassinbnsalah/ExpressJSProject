@@ -36,39 +36,8 @@ const server = http.createServer(app);
 const io = require("socket.io")(server);
 io.on('connection', (socket) => {
 
-  console.log('a user connected');
-
-  socket.on('creerP', (response) => {
-    //console.log('Received response from server:', response);
-    controller.addPartieSocket(response);
-    io.emit('msg', response);
-  });
 
 
-// ki bch traja3 nafs l response lel twig matesthakch async await
-// sinon ken bch trajaa haja apartir mn fnct fl controller lezm async await
-  socket.on('hathat',  async (partie) => {
-    let data = await  controller.getTwoPlayers(partie);
-    //console.log( "bayy"+JSON.stringify(data))
-    io.emit('data', data);
-  });
-
-
-
-  /*************CHAT*********************/
-  socket.on('envoyerMsg', (response) => {
-    controller.add(response);
-    io.emit('chat', response);
-  });
-
-  // Writing notification
-  socket.on('startTyping', (nom) => {
-    io.emit('notif', { nom, isTyping: true });
-  });
-
-  socket.on('stopTyping', (nom) => {
-    io.emit('notif', { nom, isTyping: false });
-  });
 
   // Handle disconnection
   socket.on('disconnect', () => {
@@ -84,5 +53,5 @@ io.on('connection', (socket) => {
 
 
 
-server.listen(3000, () => console.log("server is run"));
+server.listen(3001, () => console.log("server is run"));
 
